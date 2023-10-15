@@ -1,0 +1,29 @@
+{
+  "name": "newsposts-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "npm-run-all --parallel tsc-watch nodemon-server",
+    "tsc-watch": "tsc -w",
+    "nodemon-server": "nodemon ./dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.19",
+    "@types/node": "^20.8.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1",
+    "npm-run-all": "^4.1.5",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.1.13",
+    "ts-node": "^10.9.1",
+    "tsc-watch": "^6.0.4",
+    "typeorm": "^0.3.17",
+    "typescript": "^5.2.2"
+  }
+}
