@@ -2,9 +2,9 @@ import dotenv from "dotenv";
 import express from "express";
 import { NewsDataSource } from "./data-source.js";
 
+dotenv.config();
 const app = express();
 app.use(express.json());
-dotenv.config();
 
 const port: number = parseInt(process.env.PORT || "4000", 10);
 const hostname: string = process.env.HOST || "localhost";
