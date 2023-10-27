@@ -2,10 +2,12 @@ import express from "express";
 import dotenv from "dotenv";
 import { AppDataSource } from "./datasource";
 import newsrouter from "./routes/newsroute";
+import { logMiddleware } from "./middleware/logMiddleware";
 
 const app = express();
 app.use(express.json());
 dotenv.config();
+app.use(logMiddleware);
 
 AppDataSource.initialize()
   .then(() => {
