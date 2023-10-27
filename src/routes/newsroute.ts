@@ -7,11 +7,18 @@ const newsrouter = Router();
 newsrouter.get("/api/headlines", async (req: Request, res: Response) => {
   try {
     console.log("Request URL:", req.url);
-    const newsCards = await AppDataSource.getRepository(Newscards).find();
+
+    const page = parseInt(req.query.page as string) || 1;
+    const size = parseInt(req.query.size as string) || 10;
+    const skip = (page - 1) * size;
+    const newsCards = await AppDataSource.getRepository(Newscards).find({
+      skip: skip,
+      take: size,
+    });
 
     res.status(200).json(newsCards);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -52,7 +59,7 @@ newsrouter.post("/api/headlines", async (req: Request, res: Response) => {
     );
 
     console.log(`The new card is ${result}`);
-    res.status(201).send("New card has been created!");
+    res.status(201).send("New card has been created");
   } catch (error) {
     res.status(500).json({ error: "Failed to create a new card" });
   }
@@ -98,9 +105,9 @@ newsrouter.delete("/api/headlines/:id", async (req: Request, res: Response) => {
     );
 
     if (result.affected === 1) {
-      res.status(200).json({ message: "News card deleted!" });
+      res.status(200).json({ message: "News card deleted" });
     } else {
-      res.status(404).json({ error: "News card not found." });
+      res.status(404).json({ error: "News card not found" });
     }
   } catch (error) {
     console.error(error);
