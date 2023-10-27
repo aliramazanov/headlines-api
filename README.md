@@ -7,7 +7,7 @@
 - TypeScript is used to ensure type safety, and TypeORM connects the application to a PostgreSQL database.
 - Routes are used and a simple middleware added for logging request method, url, user-agent and etc.
 
-## To use the API on your local machine:
+## To use the API on your local machine
 
 - Clone it and install necessary dependencies using npm install
 - Configure your own enviroment by creating dotenv file and adding:
