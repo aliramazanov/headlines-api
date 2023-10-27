@@ -10,7 +10,8 @@
 ## To use the API on your local machine:
 
 - Clone it and install necessary dependencies using npm install
-- Configure your own enviroment by creating dotenv file and adding (PORT, HOST, DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE)
+- Configure your own enviroment by creating dotenv file and adding:
+- PORT, HOST, DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE
 - Create a database on PostgreSQL and add it to datasource.ts or let TypeORM to handle it
 - Run the server with the command npm start
 - Connect it to a client project of yours or test it with Postman
