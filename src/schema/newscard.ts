@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Newscard {
+export class Newscards {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -10,4 +10,7 @@ export class Newscard {
 
   @Column()
   content!: string;
+
+  @Column()
+  author!: string;
 }

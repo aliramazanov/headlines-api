@@ -1,9 +1,10 @@
 import express from "express";
-import { Request, Response } from "express";
 import dotenv from "dotenv";
 import { AppDataSource } from "./datasource";
+import newsrouter from "./routes/newsroute";
 
 const app = express();
+app.use(express.json());
 dotenv.config();
 
 AppDataSource.initialize()
@@ -14,7 +15,7 @@ AppDataSource.initialize()
     console.error("Error in connection to database!");
   });
 
-app.get("/api/headlines", (req: Request, res: Response) => {});
+app.use(newsrouter);
 
 const port: number = parseInt(process.env.PORT || "4000", 10);
 const hostname: string = process.env.HOST || "localhost";
