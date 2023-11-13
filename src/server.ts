@@ -1,27 +1,82 @@
-import express from "express";
 import dotenv from "dotenv";
+import express from "express";
+import passport from "passport";
+import { LocalStrategyInstance } from "./auth/localstrategy";
 import { AppDataSource } from "./datasource";
-import newsrouter from "./routes/newsroute";
-import { logMiddleware } from "./middleware/logMiddleware";
+import { authMiddleware } from "./middleware/authMiddleware";
+import { loggingMiddleware } from "./middleware/loggingMiddleware";
+import authRouter from "./routes/authroute";
+import newsRouter from "./routes/newsroute";
+import { User } from "./schema/user";
 
-const app = express();
-app.use(express.json());
-dotenv.config();
-app.use(logMiddleware);
+const startServer = async () => {
+  try {
+    await AppDataSource.initialize();
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Connection to databse established!");
-  })
-  .catch(() => {
-    console.error("Error in connection to database!");
-  });
+    console.log("Connection to database established!");
 
-app.use(newsrouter);
+    dotenv.config();
+    const app = express();
+    app.use(passport.initialize());
+    app.use(express.json());
+    app.use(loggingMiddleware);
 
-const port: number = parseInt(process.env.PORT || "4000", 10);
-const hostname: string = process.env.HOST || "localhost";
+    passport.serializeUser((user: any, done) => {
+      try {
+        if (!user || !user.id) {
+          throw new Error("Invalid user object for serialization");
+        }
+        done(null, user.id);
+      } catch (error) {
+        console.error("Error during serialization:", error);
+        done(error);
+      }
+    });
 
-app.listen(port, hostname, () => {
-  console.log(`Server is up & running on http://${hostname}:${port}`);
-});
+    passport.deserializeUser(async (id: number, done) => {
+      try {
+        const userRepository = AppDataSource.getRepository(User);
+
+        if (!id) {
+          throw new Error("Invalid user ID for deserialization");
+        }
+
+        const user = await userRepository.findOne({ where: { id } });
+
+        if (user) {
+          done(null, user);
+        } else {
+          console.error("User not found during deserialization");
+          done(new Error("User does not exist"));
+        }
+      } catch (err) {
+        console.error("Error during deserialization:", err);
+        done(err);
+      }
+    });
+
+    passport.use(LocalStrategyInstance);
+
+    app.use((req, res, next) => {
+      if (req.path === "/auth/login" || req.path === "/auth/register") {
+        next();
+      } else {
+        authMiddleware(req, res, next);
+      }
+    });
+
+    app.use(authRouter);
+    app.use(newsRouter);
+
+    const port: number = parseInt(process.env.PORT || "9595", 10);
+    const hostname: string = process.env.HOST || "localhost";
+
+    app.listen(port, hostname, () => {
+      console.log(`Server is up & running on http://${hostname}:${port}`);
+    });
+  } catch (error) {
+    console.error("Error in connection to database:", error);
+  }
+};
+
+startServer();

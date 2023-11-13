@@ -1,6 +1,8 @@
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
 import { Newscards } from "./schema/newscard";
+import { User } from "./schema/user";
+
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -10,9 +12,9 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  synchronize: false,
+  synchronize: true,
   logging: true,
-  entities: [Newscards],
+  entities: [Newscards, User],
   subscribers: [],
   migrations: [],
 });

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-export function logMiddleware(req: Request, res: Response, next: NextFunction) {
+export function loggingMiddleware(req: Request, res: Response, next: NextFunction) {
   const method = req.method;
   const url = req.originalUrl;
   const query = JSON.stringify(req.query);

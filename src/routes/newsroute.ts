@@ -2,9 +2,9 @@ import { Router, Request, Response } from "express";
 import { AppDataSource } from "../datasource";
 import { Newscards } from "../schema/newscard";
 
-const newsrouter = Router();
+const newsRouter = Router();
 
-newsrouter.get("/api/headlines", async (req: Request, res: Response) => {
+newsRouter.get("/api/headlines", async (req: Request, res: Response) => {
   try {
     console.log("Request URL:", req.url);
 
@@ -22,7 +22,7 @@ newsrouter.get("/api/headlines", async (req: Request, res: Response) => {
   }
 });
 
-newsrouter.get("/api/headlines/:id", async (req: Request, res: Response) => {
+newsRouter.get("/api/headlines/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
 
@@ -49,7 +49,7 @@ newsrouter.get("/api/headlines/:id", async (req: Request, res: Response) => {
   }
 });
 
-newsrouter.post("/api/headlines", async (req: Request, res: Response) => {
+newsRouter.post("/api/headlines", async (req: Request, res: Response) => {
   try {
     const addednewsCard = AppDataSource.getRepository(Newscards).create(
       req.body
@@ -65,7 +65,7 @@ newsrouter.post("/api/headlines", async (req: Request, res: Response) => {
   }
 });
 
-newsrouter.put("/api/headlines/:id", async (req: Request, res: Response) => {
+newsRouter.put("/api/headlines/:id", async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id, 10);
     const updatedNewsCard = await AppDataSource.getRepository(
@@ -98,7 +98,7 @@ newsrouter.put("/api/headlines/:id", async (req: Request, res: Response) => {
   }
 });
 
-newsrouter.delete("/api/headlines/:id", async (req: Request, res: Response) => {
+newsRouter.delete("/api/headlines/:id", async (req: Request, res: Response) => {
   try {
     const result = await AppDataSource.getRepository(Newscards).delete(
       req.params.id
@@ -115,4 +115,4 @@ newsrouter.delete("/api/headlines/:id", async (req: Request, res: Response) => {
   }
 });
 
-export default newsrouter;
+export default newsRouter;
