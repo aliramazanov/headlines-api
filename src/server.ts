@@ -9,18 +9,20 @@ import authRouter from "./routes/authroute";
 import newsRouter from "./routes/newsroute";
 import { User } from "./schema/user";
 
-const startServer = async () => {
+const initializeServer = async () => {
   try {
-    await AppDataSource.initialize();
-
-    console.log("Connection to database established!");
+    console.log("Initializing server...");
 
     dotenv.config();
-    const app = express();
-    app.use(passport.initialize());
-    app.use(express.json());
-    app.use(loggingMiddleware);
 
+    console.log("Initializing TypeORM connection...");
+    await AppDataSource.initialize();
+    console.log("TypeORM connection established!");
+
+    const app = express();
+    app.use(express.json());
+
+    console.log("Setting up passport serialization and deserialization...");
     passport.serializeUser((user: any, done) => {
       try {
         if (!user || !user.id) {
@@ -55,8 +57,8 @@ const startServer = async () => {
       }
     });
 
-    passport.use(LocalStrategyInstance);
-
+    console.log("Setting up middleware...");
+    app.use(passport.initialize());
     app.use((req, res, next) => {
       if (req.path === "/auth/login" || req.path === "/auth/register") {
         next();
@@ -65,18 +67,27 @@ const startServer = async () => {
       }
     });
 
+    console.log("Setting up Passport LocalStrategy...");
+    passport.use("local", LocalStrategyInstance);
+
+    console.log("Setting up logging middleware...");
+    app.use(loggingMiddleware);
+
+    console.log("Setting up routes...");
     app.use(authRouter);
     app.use(newsRouter);
 
     const port: number = parseInt(process.env.PORT || "9595", 10);
     const hostname: string = process.env.HOST || "localhost";
 
+    console.log("Starting server...");
     app.listen(port, hostname, () => {
       console.log(`Server is up & running on http://${hostname}:${port}`);
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in connection to database:", error);
+    console.error(error.stack);
   }
 };
 
-startServer();
+initializeServer();
