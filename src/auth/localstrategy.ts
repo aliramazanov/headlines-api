@@ -11,8 +11,7 @@ export const LocalStrategyInstance = new LocalStrategy(
   },
   async (email, password, done) => {
     try {
-      // Ensure that the TypeORM connection is established before accessing the repository
-      await getConnection();
+      getConnection();
 
       const userRepository: Repository<User> = getRepository(User);
 
@@ -35,3 +34,5 @@ export const LocalStrategyInstance = new LocalStrategy(
     }
   }
 );
+
+export default LocalStrategyInstance;
