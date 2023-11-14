@@ -26,12 +26,22 @@ const initializeServer = async () => {
 
     dotenv.config();
 
+    const requiredEnvVars = ["PORT", "HOST", "JWT_SECRET_KEY"];
+    for (const envVar of requiredEnvVars) {
+      if (!process.env[envVar]) {
+        console.error(`Error: ${envVar} is not defined in the environment.`);
+        process.exit(1);
+      }
+    }
+
     await initializeTypeORMConnection();
+    console.log("TypeORM connection status:", AppDataSource.isConnected);
 
     const app = express();
     app.use(express.json());
 
     console.log("Setting up passport serialization and deserialization...");
+
     passport.serializeUser((user: any, done) => {
       try {
         if (!user || !user.id) {
@@ -45,6 +55,7 @@ const initializeServer = async () => {
     });
 
     console.log("Setting up middleware...");
+
     app.use(passport.initialize());
     app.use((req, res, next) => {
       if (req.path === "/auth/login" || req.path === "/auth/register") {
@@ -55,12 +66,15 @@ const initializeServer = async () => {
     });
 
     console.log("Setting up Passport LocalStrategy...");
+
     passport.use("local", LocalStrategyInstance);
 
     console.log("Setting up logging middleware...");
+
     app.use(loggingMiddleware);
 
     console.log("Setting up routes...");
+
     app.use(authRouter);
     app.use(newsRouter);
 
@@ -68,6 +82,7 @@ const initializeServer = async () => {
     const hostname: string = process.env.HOST || "localhost";
 
     console.log("Starting server...");
+
     app.listen(port, hostname, () => {
       console.log(`Server is up & running on http://${hostname}:${port}`);
     });

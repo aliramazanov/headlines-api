@@ -41,20 +41,18 @@ authRouter.post("/auth/register", async (req: Request, res: Response) => {
 authRouter.post("/auth/login", (req, res, next) => {
   passport.authenticate(
     "local",
-    (
-      err: { message: string | undefined },
-      user: User,
-      info: { message: any }
-    ) => {
+    (err: Error, user: User, info: { message: any }) => {
       try {
         if (err) {
-          throw new Error(err.message);
+          console.error("Passport authentication error:", err);
+          throw err;
         }
 
         if (!user) {
-          return res
-            .status(401)
-            .json({ error: "Authentication failed", details: info.message });
+          return res.status(401).json({
+            error: "Authentication failed",
+            details: info.message || "Invalid credentials",
+          });
         }
 
         const token = generateToken(user);

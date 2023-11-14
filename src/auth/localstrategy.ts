@@ -11,10 +11,15 @@ export const LocalStrategyInstance = new LocalStrategy(
   },
   async (email, password, done) => {
     try {
-      getConnection();
+      const connection = getConnection();
+
+      console.log("Is TypeORM connected?", connection.isConnected);
+
+      if (!connection.isConnected) {
+        throw new Error("TypeORM connection is not established.");
+      }
 
       const userRepository: Repository<User> = getRepository(User);
-
       const user = await userRepository.findOne({ where: { email } });
 
       if (!user) {
@@ -28,9 +33,15 @@ export const LocalStrategyInstance = new LocalStrategy(
       }
 
       return done(null, user);
-    } catch (error) {
-      console.error("LocalStrategy error:", error);
-      return done(error);
+    } catch (error: any) {
+      if (error.name === "ConnectionNotFoundError") {
+        console.error("LocalStrategy error: TypeORM connection not found");
+      } else {
+        console.error("LocalStrategy error:", error);
+      }
+      return done(error, false, {
+        message: "Server error during authentication",
+      });
     }
   }
 );
