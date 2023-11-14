@@ -7,7 +7,18 @@ import { authMiddleware } from "./middleware/authMiddleware";
 import { loggingMiddleware } from "./middleware/loggingMiddleware";
 import authRouter from "./routes/authroute";
 import newsRouter from "./routes/newsroute";
-import { User } from "./schema/user";
+
+const initializeTypeORMConnection = async () => {
+  try {
+    console.log("Initializing TypeORM connection...");
+    await AppDataSource.initialize();
+    console.log("TypeORM connection established!");
+  } catch (error: any) {
+    console.error("Error in connection to database:", error);
+    console.error(error.stack);
+    throw error;
+  }
+};
 
 const initializeServer = async () => {
   try {
@@ -15,9 +26,7 @@ const initializeServer = async () => {
 
     dotenv.config();
 
-    console.log("Initializing TypeORM connection...");
-    await AppDataSource.initialize();
-    console.log("TypeORM connection established!");
+    await initializeTypeORMConnection();
 
     const app = express();
     app.use(express.json());
@@ -32,28 +41,6 @@ const initializeServer = async () => {
       } catch (error) {
         console.error("Error during serialization:", error);
         done(error);
-      }
-    });
-
-    passport.deserializeUser(async (id: number, done) => {
-      try {
-        const userRepository = AppDataSource.getRepository(User);
-
-        if (!id) {
-          throw new Error("Invalid user ID for deserialization");
-        }
-
-        const user = await userRepository.findOne({ where: { id } });
-
-        if (user) {
-          done(null, user);
-        } else {
-          console.error("User not found during deserialization");
-          done(new Error("User does not exist"));
-        }
-      } catch (err) {
-        console.error("Error during deserialization:", err);
-        done(err);
       }
     });
 
@@ -85,8 +72,7 @@ const initializeServer = async () => {
       console.log(`Server is up & running on http://${hostname}:${port}`);
     });
   } catch (error: any) {
-    console.error("Error in connection to database:", error);
-    console.error(error.stack);
+    console.error("Error during server initialization:", error);
   }
 };
 
