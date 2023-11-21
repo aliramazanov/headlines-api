@@ -39,24 +39,33 @@ authRouter.post("/auth/register", async (req: Request, res: Response) => {
 });
 
 authRouter.post("/auth/login", (req, res, next) => {
+  const userRepository = AppDataSource.getRepository(User);
   passport.authenticate(
     "local",
     (err: Error, user: User, info: { message: any }) => {
       try {
+        console.log("err", err);
         if (err) {
           console.error("Passport authentication error:", err);
-          throw err;
+          // throw err;
         }
+        console.log(2);
 
-        if (!user) {
-          return res.status(401).json({
-            error: "Authentication failed",
-            details: info.message || "Invalid credentials",
-          });
+        if (!userRepository) {
+          throw new Error("User repository not available");
         }
+        console.log(3);
 
+        // if (!user) {
+        //   return res.status(401).json({
+        //     error: "Authentication failed",
+        //     details: info.message || "Invalid credentials",
+        //   });
+        // }
+        console.log("user", user);
         const token = generateToken(user);
         res.json({ token });
+        console.log(4);
       } catch (error: any) {
         console.error("Login error:", error);
         res.status(500).json({ error: "Server error", details: error.message });

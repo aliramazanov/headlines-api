@@ -1,4 +1,4 @@
-import passportLocal from "passport-local";
+import * as passportLocal from "passport-local";
 import { Repository, getRepository, getConnection } from "typeorm";
 import { User } from "../schema/user";
 

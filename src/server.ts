@@ -50,7 +50,7 @@ const initializeServer = async () => {
         done(null, user.id);
       } catch (error) {
         console.error("Error during serialization:", error);
-        done(error);
+        done(error, null);
       }
     });
 
